@@ -6,4 +6,4 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 @Parcelize
-data class ToDo(var title: String, var reminderDate: LocalDate, var reminderTime: LocalTime) : Parcelable
+data class ToDo(val index: Int, var title: String, var reminderDate: LocalDate, var reminderTime: LocalTime) : Parcelable

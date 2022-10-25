@@ -18,6 +18,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/title"
+            android:focusableInTouchMode="false"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -36,6 +37,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/date"
             android:layout_width="match_parent"
+            android:focusableInTouchMode="false"
             android:layout_height="wrap_content" />
 
 
@@ -52,6 +54,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/time"
             android:layout_width="match_parent"
+            android:focusableInTouchMode="false"
             android:layout_height="wrap_content" />
 
     </com.google.android.material.textfield.TextInputLayout>

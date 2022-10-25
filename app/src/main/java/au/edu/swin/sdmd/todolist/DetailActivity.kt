@@ -18,7 +18,7 @@ private const val TIME_PICKER_TAG = "TIME_PICKER_TAG"
 
 class DetailActivity : AppCompatActivity() {
     companion object {
-        val EXTRA_TO_DO = "EXTRA_TO_DO"
+        const val EXTRA_TO_DO = "EXTRA_TO_DO"
     }
 
     private lateinit var binding: ActivityDetailBinding
@@ -76,7 +76,7 @@ class DetailActivity : AppCompatActivity() {
         super.onBackPressed()
     }
 
-    fun updateView() {
+    private fun updateView() {
         binding.title.setText(toDo.title)
         binding.time.setText(toDo.reminderTime.format(ToDoAdapter.timeFormatter))
         binding.date.setText(toDo.reminderDate.toString())

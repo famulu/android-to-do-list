@@ -3,13 +3,14 @@ package au.edu.swin.sdmd.todolist
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
 import androidx.recyclerview.widget.RecyclerView
 import au.edu.swin.sdmd.todolist.databinding.ToDoItemBinding
 import java.time.format.DateTimeFormatter
 
 const val EXTRA_UPDATED_TO_DO = "EXTRA_UPDATED_TO_DO"
 
-class ToDoAdapter(private val toDoList: List<ToDo>) :
+class ToDoAdapter(private val toDoList: List<ToDo>, val detailLauncher: ActivityResultLauncher<Intent>) :
     RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder>() {
 
 
@@ -29,20 +30,6 @@ class ToDoAdapter(private val toDoList: List<ToDo>) :
     inner class ToDoViewHolder(private val binding: ToDoItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(toDo: ToDo) {
-//            val activityLauncher =
-//                (binding.root.context as ComponentActivity).registerForActivityResult(
-//                    ActivityResultContracts.StartActivityForResult()
-//                ) { result ->
-//                    if (result.resultCode == Activity.RESULT_OK) {
-//                        val updatedTodo =
-//                            result.data?.getParcelableExtra<ToDo>(EXTRA_UPDATED_TO_DO)!!
-//                        toDo.apply {
-//                            title = updatedTodo.title
-//                            reminderDate = updatedTodo.reminderDate
-//                            reminderTime = updatedTodo.reminderTime
-//                        }
-//                    }
-//                }
 
             binding.title.text = toDo.title
             binding.reminderDate.text = toDo.reminderDate.format(dateFormatter)
@@ -52,14 +39,14 @@ class ToDoAdapter(private val toDoList: List<ToDo>) :
                 val intent = Intent(
                     it.context, DetailActivity::class.java
                 ).putExtra(DetailActivity.EXTRA_TO_DO, toDo)
-                it.context.startActivity(intent)
+                detailLauncher.launch(intent)
             }
         }
     }
 
     companion object {
-        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
-        val dateFormatter = DateTimeFormatter.ofPattern("dd MMM")
+        val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM")
     }
 }
 
