@@ -18,11 +18,8 @@ private const val DATABASE_NAME = "TO_DO_DATABASE"
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
     private lateinit var toDoAdapter: ToDoAdapter
-
     private lateinit var db: ToDoDatabase
-
     private val toDoList = mutableListOf<ToDo>()
 
     private val detailLauncher =
@@ -45,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         db = Room.databaseBuilder(applicationContext, ToDoDatabase::class.java, DATABASE_NAME).allowMainThreadQueries()
             .build()
 
-
         toDoList.addAll(db.toDoDao().loadAll())
 
         toDoAdapter = ToDoAdapter(toDoList, detailLauncher)
@@ -62,12 +58,12 @@ class MainActivity : AppCompatActivity() {
             db.toDoDao().insertAll(newToDo)
             toDoList.clear()
             toDoList.addAll(db.toDoDao().loadAll())
+            toDoAdapter.notifyItemInserted(db.toDoDao().getRowCount() - 1)
             val intent = Intent(this, DetailActivity::class.java).putExtra(
                 DetailActivity.EXTRA_TO_DO, newToDo
             )
             detailLauncher.launch(intent)
 
-            toDoAdapter.notifyItemInserted(db.toDoDao().getRowCount() - 1)
         }
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
@@ -82,6 +78,8 @@ class MainActivity : AppCompatActivity() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val deletedToDo: ToDo = toDoList[viewHolder.adapterPosition]
                 db.toDoDao().delete(deletedToDo)
+                toDoList.clear()
+                toDoList.addAll(db.toDoDao().loadAll())
                 val position = viewHolder.adapterPosition
                 toDoAdapter.notifyItemRemoved(position)
                 Snackbar.make(

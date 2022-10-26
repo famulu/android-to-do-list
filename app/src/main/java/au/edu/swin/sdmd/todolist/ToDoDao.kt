@@ -15,6 +15,7 @@ interface ToDoDao {
     @Update
     fun updateToDo(vararg toDos: ToDo)
 
+
     @Query("SELECT COUNT(*) FROM ToDo")
     fun getRowCount(): Int
 
@@ -26,4 +27,7 @@ interface ToDoDao {
 
     @Query("DELETE FROM ToDo WHERE id = :toDoId")
     fun deleteById(toDoId: Long)
+
+    @Query("DELETE FROM ToDo")
+    fun deleteAll()
 }
