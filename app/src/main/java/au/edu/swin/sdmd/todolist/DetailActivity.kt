@@ -9,7 +9,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.time.Instant
-import java.time.LocalTime
 import java.time.ZoneId
 
 
@@ -39,7 +38,7 @@ class DetailActivity : AppCompatActivity() {
 
         binding.date.setOnClickListener {
             val dateUtc =
-                toDo.reminderDate.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                toDo.reminderDateTime.toInstant().toEpochMilli()
 
             val datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date")
                 .setSelection(dateUtc).build()
@@ -47,8 +46,9 @@ class DetailActivity : AppCompatActivity() {
             datePicker.show(supportFragmentManager, DATE_PICKER_TAG)
 
             datePicker.addOnPositiveButtonClickListener {
-                val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-                toDo.reminderDate = date
+                val date =
+                    Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).withFixedOffsetZone()
+                toDo.reminderDateTime = date
                 updateView()
             }
 
@@ -56,12 +56,13 @@ class DetailActivity : AppCompatActivity() {
 
         binding.time.setOnClickListener {
             val timePicker = MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_12H)
-                .setHour(toDo.reminderTime.hour).setMinute(toDo.reminderTime.minute)
+                .setHour(toDo.reminderDateTime.hour).setMinute(toDo.reminderDateTime.minute)
                 .setTitleText("Select time").build()
             timePicker.show(supportFragmentManager, TIME_PICKER_TAG)
 
             timePicker.addOnPositiveButtonClickListener {
-                toDo.reminderTime = LocalTime.of(timePicker.hour, timePicker.minute)
+                toDo.reminderDateTime =
+                    toDo.reminderDateTime.withHour(timePicker.hour).withMinute(timePicker.minute)
                 updateView()
             }
         }
@@ -78,7 +79,7 @@ class DetailActivity : AppCompatActivity() {
 
     private fun updateView() {
         binding.title.setText(toDo.title)
-        binding.time.setText(toDo.reminderTime.format(ToDoAdapter.timeFormatter))
-        binding.date.setText(toDo.reminderDate.toString())
+        binding.time.setText(toDo.reminderDateTime.format(ToDoAdapter.timeFormatter))
+        binding.date.setText(toDo.reminderDateTime.format(ToDoAdapter.dateFormatter))
     }
 }

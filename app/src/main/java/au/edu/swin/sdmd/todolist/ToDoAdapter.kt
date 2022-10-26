@@ -10,8 +10,10 @@ import java.time.format.DateTimeFormatter
 
 const val EXTRA_UPDATED_TO_DO = "EXTRA_UPDATED_TO_DO"
 
-class ToDoAdapter(private val toDoList: List<ToDo>, val detailLauncher: ActivityResultLauncher<Intent>) :
-    RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder>() {
+class ToDoAdapter(
+    val toDoList: MutableList<ToDo>,
+    val detailLauncher: ActivityResultLauncher<Intent>
+) : RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoViewHolder {
@@ -27,13 +29,17 @@ class ToDoAdapter(private val toDoList: List<ToDo>, val detailLauncher: Activity
 
     override fun getItemCount() = toDoList.size
 
+    override fun getItemId(position: Int): Long {
+        return toDoList[position].id
+    }
+
     inner class ToDoViewHolder(private val binding: ToDoItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(toDo: ToDo) {
 
             binding.title.text = toDo.title
-            binding.reminderDate.text = toDo.reminderDate.format(dateFormatter)
-            binding.reminderTime.text = toDo.reminderTime.format(timeFormatter)
+            binding.reminderDate.text = toDo.reminderDateTime.format(dateFormatter)
+            binding.reminderTime.text = toDo.reminderDateTime.format(timeFormatter)
 
             binding.root.setOnClickListener {
                 val intent = Intent(

@@ -3,41 +3,58 @@ package au.edu.swin.sdmd.todolist
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import au.edu.swin.sdmd.todolist.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.coroutines.runBlocking
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.ZonedDateTime
+
+private const val DATABASE_NAME = "TO_DO_DATABASE"
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var toDoList: MutableList<ToDo>
-
     private lateinit var toDoAdapter: ToDoAdapter
 
-    private val detailLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data = result.data?.getParcelableExtra<ToDo>(EXTRA_UPDATED_TO_DO)!!
-            toDoList[data.index] = data
-            toDoAdapter.notifyItemChanged(data.index)
+    private lateinit var db: ToDoDatabase
+
+    private val toDoList = mutableListOf<ToDo>()
+
+    private val detailLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val data = result.data?.getParcelableExtra<ToDo>(EXTRA_UPDATED_TO_DO)!!
+                db.toDoDao().updateToDo(data)
+                toDoAdapter.notifyDataSetChanged()
+            }
         }
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        toDoList = MutableList(100) {
-            ToDo(it, it.toString(), LocalDate.now(), LocalTime.now())
+        db = Room.databaseBuilder(applicationContext, ToDoDatabase::class.java, DATABASE_NAME).allowMainThreadQueries()
+            .build()
+
+        db.toDoDao().loadAll().observe(this) {
+            if (it.isNullOrEmpty()) {
+                toDoList.clear()
+                toDoAdapter.notifyDataSetChanged()
+            } else {
+                toDoList.clear()
+                toDoList.addAll(it)
+                toDoAdapter.notifyDataSetChanged()
+            }
         }
+
+
 
         toDoAdapter = ToDoAdapter(toDoList, detailLauncher)
         binding.toDoList.apply {
@@ -46,15 +63,17 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.floatingActionButton.setOnClickListener {
-            val newToDo = ToDo(toDoList.size, toDoList.size.toString(), LocalDate.of(1999, 1, 25), LocalTime.now())
-            toDoList.add(newToDo)
-            val intent = Intent(this, DetailActivity::class.java).putExtra(DetailActivity.EXTRA_TO_DO, newToDo)
+            val newToDo = ToDo(
+                title = "To Do",
+                reminderDateTime = ZonedDateTime.now()
+            )
+            db.toDoDao().insertAll(newToDo)
+            val intent = Intent(this, DetailActivity::class.java).putExtra(
+                DetailActivity.EXTRA_TO_DO, newToDo
+            )
             detailLauncher.launch(intent)
-            runBlocking {
 
-            }
-            toDoAdapter.notifyItemInserted(toDoList.size - 1)
-            binding.toDoList.scrollToPosition(toDoList.size - 1)
+            toDoAdapter.notifyItemInserted(db.toDoDao().getRowCount() - 1)
         }
 
         ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
@@ -67,15 +86,17 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val deletedToDo: ToDo = toDoList[viewHolder.adapterPosition]
+                val deletedToDo: ToDo = db.toDoDao().loadById(viewHolder.itemId).copy()
+                db.toDoDao().deleteById(viewHolder.itemId)
                 val position = viewHolder.adapterPosition
-                toDoList.removeAt(viewHolder.adapterPosition)
-                toDoAdapter.notifyItemRemoved(viewHolder.adapterPosition)
-                Snackbar.make(binding.toDoList, "Deleted " + deletedToDo.title, Snackbar.LENGTH_LONG).setAction("Undo",
-                    {
-                        toDoList.add(position, deletedToDo)
-                        toDoAdapter.notifyItemInserted(position)
-                    }).show()
+                toDoAdapter.notifyItemRemoved(position)
+                Snackbar.make(
+                    binding.toDoList, "Deleted " + deletedToDo.title, Snackbar.LENGTH_LONG
+                ).setAction("Undo") {
+                    db.toDoDao().insertAll(deletedToDo)
+                    toDoAdapter.toDoList.add(position, deletedToDo)
+                    toDoAdapter.notifyItemInserted(position)
+                }.show()
             }
         }).attachToRecyclerView(binding.toDoList)
     }

@@ -1,9 +1,16 @@
 package au.edu.swin.sdmd.todolist
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.ZonedDateTime
 
 @Parcelize
-data class ToDo(val index: Int, var title: String, var reminderDate: LocalDate, var reminderTime: LocalTime) : Parcelable
+@Entity
+data class ToDo(
+    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    var title: String,
+    @ColumnInfo(name = "reminder_date_time") var reminderDateTime: ZonedDateTime,
+) : Parcelable
