@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data?.getParcelableExtra<ToDo>(EXTRA_UPDATED_TO_DO)!!
                 db.toDoDao().updateToDo(data)
+                toDoList.clear()
+                toDoList.addAll(db.toDoDao().loadAll())
                 toDoAdapter.notifyDataSetChanged()
             }
         }
@@ -43,18 +45,8 @@ class MainActivity : AppCompatActivity() {
         db = Room.databaseBuilder(applicationContext, ToDoDatabase::class.java, DATABASE_NAME).allowMainThreadQueries()
             .build()
 
-        db.toDoDao().loadAll().observe(this) {
-            if (it.isNullOrEmpty()) {
-                toDoList.clear()
-                toDoAdapter.notifyDataSetChanged()
-            } else {
-                toDoList.clear()
-                toDoList.addAll(it)
-                toDoAdapter.notifyDataSetChanged()
-            }
-        }
 
-
+        toDoList.addAll(db.toDoDao().loadAll())
 
         toDoAdapter = ToDoAdapter(toDoList, detailLauncher)
         binding.toDoList.apply {
@@ -68,6 +60,8 @@ class MainActivity : AppCompatActivity() {
                 reminderDateTime = ZonedDateTime.now()
             )
             db.toDoDao().insertAll(newToDo)
+            toDoList.clear()
+            toDoList.addAll(db.toDoDao().loadAll())
             val intent = Intent(this, DetailActivity::class.java).putExtra(
                 DetailActivity.EXTRA_TO_DO, newToDo
             )
@@ -86,8 +80,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val deletedToDo: ToDo = db.toDoDao().loadById(viewHolder.itemId).copy()
-                db.toDoDao().deleteById(viewHolder.itemId)
+                val deletedToDo: ToDo = toDoList[viewHolder.adapterPosition]
+                db.toDoDao().delete(deletedToDo)
                 val position = viewHolder.adapterPosition
                 toDoAdapter.notifyItemRemoved(position)
                 Snackbar.make(

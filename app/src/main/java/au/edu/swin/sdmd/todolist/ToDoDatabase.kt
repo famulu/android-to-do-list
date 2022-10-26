@@ -8,6 +8,4 @@ import androidx.room.TypeConverters
 @TypeConverters(ToDoTypeConverter::class)
 abstract class ToDoDatabase : RoomDatabase() {
     abstract fun toDoDao(): ToDoDao
-
-
 }

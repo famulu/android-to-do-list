@@ -1,12 +1,13 @@
 package au.edu.swin.sdmd.todolist
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.room.*
 
 @Dao
 interface ToDoDao {
     @Query("SELECT * FROM ToDo")
-    fun loadAll(): LiveData<List<ToDo>>
+    fun loadAll(): List<ToDo>
 
     @Query("SELECT * FROM ToDo WHERE id = :toDoId")
     fun loadById(toDoId: Long): ToDo
@@ -19,7 +20,6 @@ interface ToDoDao {
 
     @Insert
     fun insertAll(vararg toDos: ToDo)
-
 
     @Delete
     fun delete(toDo: ToDo)
