@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import au.edu.swin.sdmd.todolist.database.ToDoDatabase
 import au.edu.swin.sdmd.todolist.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import java.time.ZonedDateTime
@@ -26,7 +27,15 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val data = result.data?.getParcelableExtra<ToDo>(EXTRA_UPDATED_TO_DO)!!
-                db.toDoDao().updateToDo(data)
+
+                val dataDb = db.toDoDao().loadById(data.id)
+                dataDb.apply {
+                    title = data.title
+                    reminderDateTime = data.reminderDateTime
+                }
+
+                db.toDoDao().updateToDo(dataDb)
+
                 toDoList.clear()
                 toDoList.addAll(db.toDoDao().loadAll())
                 toDoAdapter.notifyDataSetChanged()
@@ -55,12 +64,12 @@ class MainActivity : AppCompatActivity() {
                 title = "To Do",
                 reminderDateTime = ZonedDateTime.now()
             )
-            db.toDoDao().insertAll(newToDo)
+            val newId = db.toDoDao().insert(newToDo)
             toDoList.clear()
             toDoList.addAll(db.toDoDao().loadAll())
             toDoAdapter.notifyItemInserted(db.toDoDao().getRowCount() - 1)
             val intent = Intent(this, DetailActivity::class.java).putExtra(
-                DetailActivity.EXTRA_TO_DO, newToDo
+                DetailActivity.EXTRA_TO_DO, db.toDoDao().loadById(newId)
             )
             detailLauncher.launch(intent)
 
@@ -85,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                 Snackbar.make(
                     binding.toDoList, "Deleted " + deletedToDo.title, Snackbar.LENGTH_LONG
                 ).setAction("Undo") {
-                    db.toDoDao().insertAll(deletedToDo)
+                    db.toDoDao().insert(deletedToDo)
                     toDoAdapter.toDoList.add(position, deletedToDo)
                     toDoAdapter.notifyItemInserted(position)
                 }.show()

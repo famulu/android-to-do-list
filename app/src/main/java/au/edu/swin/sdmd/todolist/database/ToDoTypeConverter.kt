@@ -1,4 +1,4 @@
-package au.edu.swin.sdmd.todolist
+package au.edu.swin.sdmd.todolist.database
 
 import androidx.room.TypeConverter
 import java.time.Instant

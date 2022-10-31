@@ -1,8 +1,7 @@
-package au.edu.swin.sdmd.todolist
+package au.edu.swin.sdmd.todolist.database
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.room.*
+import au.edu.swin.sdmd.todolist.ToDo
 
 @Dao
 interface ToDoDao {
@@ -20,7 +19,7 @@ interface ToDoDao {
     fun getRowCount(): Int
 
     @Insert
-    fun insertAll(vararg toDos: ToDo)
+    fun insert(toDos: ToDo): Long
 
     @Delete
     fun delete(toDo: ToDo)
