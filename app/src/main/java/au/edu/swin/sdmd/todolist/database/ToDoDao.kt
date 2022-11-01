@@ -12,14 +12,13 @@ interface ToDoDao {
     fun loadById(toDoId: Long): ToDo
 
     @Update
-    fun updateToDo(vararg toDos: ToDo)
-
+    fun updateToDo(toDos: ToDo)
 
     @Query("SELECT COUNT(*) FROM ToDo")
     fun getRowCount(): Int
 
     @Insert
-    fun insert(toDos: ToDo): Long
+    fun insert(toDo: ToDo): Long
 
     @Delete
     fun delete(toDo: ToDo)

@@ -8,11 +8,11 @@
     tools:context=".DetailActivity">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/title_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Title"
-        android:id="@+id/title_layout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -25,38 +25,37 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/date_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/date_layout"
         android:layout_marginTop="16dp"
         android:hint="Date"
         app:layout_constraintTop_toBottomOf="@id/title_layout">
-        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/date"
             android:layout_width="match_parent"
-            android:focusableInTouchMode="false"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="false" />
 
 
     </com.google.android.material.textfield.TextInputLayout>
+
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/time_layout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Time"
         android:layout_marginTop="16dp"
-        android:id="@+id/time_layout"
+        android:hint="Time"
         app:layout_constraintTop_toBottomOf="@id/date_layout">
-        >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/time"
             android:layout_width="match_parent"
-            android:focusableInTouchMode="false"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:focusableInTouchMode="false" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
