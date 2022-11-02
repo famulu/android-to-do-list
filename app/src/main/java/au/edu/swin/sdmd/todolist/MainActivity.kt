@@ -3,6 +3,7 @@ package au.edu.swin.sdmd.todolist
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toDoAdapter: ToDoAdapter
     private val toDoList = mutableListOf<ToDo>()
     private val toDoRepository = ToDoRepository.get()
+    private var hasLoaded = false
 
     private val detailLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -52,8 +54,11 @@ class MainActivity : AppCompatActivity() {
                 toDoRepository.loadAll().collect {
                     toDoList.clear()
                     toDoList.addAll(it)
+                    if (!hasLoaded) {
+                        toDoAdapter.notifyDataSetChanged()
+                        hasLoaded = true
+                    }
                 }
-                toDoAdapter.notifyDataSetChanged()
             }
         }
 
