@@ -103,6 +103,8 @@ class ToDoListFragment : Fragment() {
                 }
             }
         }).attachToRecyclerView(binding.toDoRecyclerView)
+
+
     }
 
     override fun onDestroyView() {
