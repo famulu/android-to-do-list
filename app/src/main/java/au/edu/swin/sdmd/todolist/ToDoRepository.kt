@@ -23,7 +23,7 @@ class ToDoRepository private constructor(context: Context, private val coroutine
     }
         suspend fun insert(toDo: ToDo) = database.toDoDao().insert(toDo)
         suspend fun delete(toDo: ToDo) = database.toDoDao().delete(toDo)
-
+        suspend fun deleteAll() = database.toDoDao().deleteAll()
 
         companion object {
         private var INSTANCE: ToDoRepository? = null

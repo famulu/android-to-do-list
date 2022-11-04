@@ -43,16 +43,23 @@ class ToDoListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 toDoListViewModel.toDos.collect { toDos ->
                     binding.toDoRecyclerView.adapter = ToDoAdapter(toDos) { toDoId ->
-                        findNavController().navigate(ToDoListFragmentDirections.showTodoDetail(toDoId))
+                        findNavController().navigate(
+                            ToDoListFragmentDirections.showTodoDetail(
+                                toDoId
+                            )
+                        )
                     }
                 }
             }
         }
 
-
         binding.floatingActionButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val newToDo = ToDo(title = "To Do", reminderDateTime = ZonedDateTime.now())
+                val newToDo = ToDo(
+                    title = "To Do",
+                    reminderDateTime = ZonedDateTime.now().plusHours(1).withMinute(0).withSecond(0)
+                        .withNano(0)
+                )
                 val newToDoId = toDoListViewModel.insertToDo(newToDo)
                 findNavController().navigate(ToDoListFragmentDirections.showTodoDetail(newToDoId))
             }

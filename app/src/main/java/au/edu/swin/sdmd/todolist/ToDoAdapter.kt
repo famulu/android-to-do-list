@@ -9,6 +9,9 @@ import java.time.format.DateTimeFormatter
 class ToDoAdapter(
     val toDoList: List<ToDo>, private val onToDoClicked: (toDoId: Long) -> Unit
 ) : RecyclerView.Adapter<ToDoViewHolder>() {
+    init {
+        setHasStableIds(true)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -25,10 +28,6 @@ class ToDoAdapter(
 
     override fun getItemId(position: Int): Long {
         return toDoList[position].id
-    }
-
-    init {
-        setHasStableIds(true)
     }
 
     companion object {

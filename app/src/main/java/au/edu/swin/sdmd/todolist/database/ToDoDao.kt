@@ -20,4 +20,7 @@ interface ToDoDao {
 
     @Delete
     suspend fun delete(toDo: ToDo)
+
+    @Query("DELETE FROM ToDo")
+    suspend fun deleteAll()
 }
