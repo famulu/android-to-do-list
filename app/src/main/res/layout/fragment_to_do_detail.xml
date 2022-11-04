@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    tools:context=".DetailActivity">
+    android:padding="16dp">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/title_layout"
@@ -17,7 +15,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/title"
+            android:id="@+id/to_do_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -34,7 +32,7 @@
         app:layout_constraintTop_toBottomOf="@id/title_layout">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/date"
+            android:id="@+id/to_do_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false" />
@@ -52,7 +50,7 @@
         app:layout_constraintTop_toBottomOf="@id/date_layout">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/time"
+            android:id="@+id/to_do_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusableInTouchMode="false" />

@@ -15,9 +15,6 @@ interface ToDoDao {
     @Update
     suspend fun updateToDo(toDos: ToDo)
 
-    @Query("SELECT COUNT(*) FROM ToDo")
-    fun getRowCount(): Int
-
     @Insert
     suspend fun insert(toDo: ToDo): Long
 

@@ -11,10 +11,9 @@ import java.time.format.DateTimeFormatter
 const val EXTRA_UPDATED_TO_DO = "EXTRA_UPDATED_TO_DO"
 
 class ToDoAdapter(
-    val toDoList: MutableList<ToDo>,
-    val detailLauncher: ActivityResultLauncher<Intent>
-) : RecyclerView.Adapter<ToDoAdapter.ToDoViewHolder>() {
-
+    val toDoList: List<ToDo>,
+    private val onToDoClicked: (toDoId: Long) -> Unit
+) : RecyclerView.Adapter<ToDoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ToDoViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -24,7 +23,7 @@ class ToDoAdapter(
 
     override fun onBindViewHolder(holder: ToDoViewHolder, position: Int) {
         val toDo = toDoList[position]
-        holder.bind(toDo)
+        holder.bind(toDo, onToDoClicked)
     }
 
     override fun getItemCount() = toDoList.size
@@ -33,26 +32,24 @@ class ToDoAdapter(
         return toDoList[position].id
     }
 
-    inner class ToDoViewHolder(private val binding: ToDoItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(toDo: ToDo) {
-
-            binding.title.text = toDo.title
-            binding.reminderDate.text = toDo.reminderDateTime.format(dateFormatter)
-            binding.reminderTime.text = toDo.reminderDateTime.format(timeFormatter)
-
-            binding.root.setOnClickListener {
-                val intent = Intent(
-                    it.context, DetailActivity::class.java
-                ).putExtra(DetailActivity.EXTRA_TO_DO, toDo)
-                detailLauncher.launch(intent)
-            }
-        }
-    }
-
     companion object {
         val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH:mm")
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd MMM")
     }
 }
+
+class ToDoViewHolder(private val binding: ToDoItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+    fun bind(toDo: ToDo, onToDoClicked: (toDoId: Long) -> Unit) {
+        binding.toDoItemTitle.text = toDo.title
+        binding.reminderDate.text = toDo.reminderDateTime.format(ToDoAdapter.dateFormatter)
+        binding.reminderTime.text = toDo.reminderDateTime.format(ToDoAdapter.timeFormatter)
+
+        binding.root.setOnClickListener {
+            onToDoClicked(toDo.id)
+        }
+    }
+}
+
+
 
