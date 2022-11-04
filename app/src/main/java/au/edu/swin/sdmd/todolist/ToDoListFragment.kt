@@ -1,5 +1,9 @@
 package au.edu.swin.sdmd.todolist
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -79,12 +83,22 @@ class ToDoListFragment : Fragment() {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val deletedToDo = toDoListViewModel.loadById(id)
                     toDoListViewModel.delete(deletedToDo)
+                    val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    val intent =
+                        Intent(requireContext().applicationContext, MyNotification::class.java).putExtra(
+                            ID_EXTRA,
+                            deletedToDo.id.toInt()
+                        ).putExtra(TITLE_EXTRA, deletedToDo.title)
+                    val pendingIntent = PendingIntent.getBroadcast(requireContext().applicationContext, deletedToDo.id.toInt(), intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                    alarmManager.cancel(pendingIntent)
                     Snackbar.make(
                         binding.root, "Deleted " + deletedToDo.title, Snackbar.LENGTH_LONG
                     ).setAction("Undo") {
                         lifecycleScope.launch {
                             toDoListViewModel.insertToDo(deletedToDo)
                         }
+                        val time = deletedToDo.reminderDateTime.toInstant().toEpochMilli()
+                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
                     }.show()
                 }
             }

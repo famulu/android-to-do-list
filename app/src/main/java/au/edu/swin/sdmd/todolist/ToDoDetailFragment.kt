@@ -23,6 +23,7 @@ import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 
 const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
@@ -34,10 +35,10 @@ class ToDoDetailFragment : Fragment() {
         get() = checkNotNull(_binding) {
             "binding cannot be accessed. Check if view is visible"
         }
+    private val args: ToDoDetailFragmentArgs by navArgs()
     private val toDoDetailViewModel: ToDoDetailViewModel by viewModels {
         ToDoDetailViewModelFactory(args.toDoId)
     }
-    private val args: ToDoDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -109,29 +110,32 @@ class ToDoDetailFragment : Fragment() {
     }
 
     private fun scheduleNotification(toDo: ToDo) {
-        val intent =
-            Intent(requireContext().applicationContext, MyNotification::class.java).putExtra(
-                ID_EXTRA,
-                toDo.id.toInt()
-            ).putExtra(TITLE_EXTRA, toDo.title)
+        if (toDo.reminderDateTime.isAfter(ZonedDateTime.now())) {
+            val intent =
+                Intent(requireContext().applicationContext, MyNotification::class.java).putExtra(
+                    ID_EXTRA,
+                    toDo.id.toInt()
+                ).putExtra(TITLE_EXTRA, toDo.title)
 
-        val pendingIntent = PendingIntent.getBroadcast(
-            requireContext().applicationContext,
-            toDo.id.toInt(),
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
+            val pendingIntent = PendingIntent.getBroadcast(
+                requireContext().applicationContext,
+                toDo.id.toInt(),
+                intent,
+                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
-        val alarmManager =
-            requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val time = toDo.reminderDateTime.toInstant().toEpochMilli()
-        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
 
-        Snackbar.make(
-            binding.root,
-            "Notification has been scheduled for ${toDo.reminderDateTime}",
-            Snackbar.LENGTH_SHORT
-        ).show()
+            val alarmManager =
+                requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val time = toDo.reminderDateTime.toInstant().toEpochMilli()
+            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
+
+            Snackbar.make(
+                binding.root,
+                "Notification has been scheduled for ${toDo.reminderDateTime}",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
     }
 
 
