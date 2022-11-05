@@ -23,10 +23,7 @@ class ToDoListViewModel : ViewModel() {
 
     suspend fun insertToDo(toDo: ToDo) = toDoRepository.insert(toDo)
 
-
-    suspend fun delete(toDo: ToDo) {
-        toDoRepository.delete(toDo)
-    }
+    suspend fun delete(toDo: ToDo) = toDoRepository.delete(toDo)
 
     suspend fun loadById(id: Long) = toDoRepository.loadById(id)
 }

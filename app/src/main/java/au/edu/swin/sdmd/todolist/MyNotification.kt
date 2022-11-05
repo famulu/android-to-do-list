@@ -19,14 +19,19 @@ class MyNotification : BroadcastReceiver() {
 
         val args = bundleOf("toDoId" to toDoId.toLong())
 
-        val pendingIntent = NavDeepLinkBuilder(context).setGraph(R.navigation.nav_graph)
-            .setDestination(R.id.toDoDetailFragment).setArguments(args).createPendingIntent()
+        val pendingIntent = NavDeepLinkBuilder(context)
+            .setGraph(R.navigation.nav_graph)
+            .setDestination(R.id.toDoDetailFragment)
+            .setArguments(args)
+            .createPendingIntent()
 
         val notification: Notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(intent.getStringExtra(TITLE_EXTRA))
-            .setPriority(NotificationCompat.PRIORITY_MAX).setContentIntent(pendingIntent)
-            .setAutoCancel(true).build()
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(toDoId, notification)

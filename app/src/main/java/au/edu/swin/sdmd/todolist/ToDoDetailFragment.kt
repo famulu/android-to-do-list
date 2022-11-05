@@ -1,9 +1,5 @@
 package au.edu.swin.sdmd.todolist
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,17 +16,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import au.edu.swin.sdmd.todolist.databinding.FragmentToDoDetailBinding
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
-import java.time.ZonedDateTime
 
 
-const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
-const val TIME_PICKER_TAG = "TIME_PICKER_TAG"
+private const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
+private const val TIME_PICKER_TAG = "TIME_PICKER_TAG"
 
 class ToDoDetailFragment : Fragment() {
     private var _binding: FragmentToDoDetailBinding? = null
@@ -81,18 +75,20 @@ class ToDoDetailFragment : Fragment() {
             toDoTime.setOnClickListener {
                 val toDo = toDoDetailViewModel.toDo.value
                 toDo?.let {
-                    val timePicker =
-                        MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_12H)
-                            .setHour(it.reminderDateTime.hour).setMinute(it.reminderDateTime.minute)
-                            .setTitleText("Select time").build()
+                    val timePicker = MaterialTimePicker.Builder()
+                            .setTimeFormat(TimeFormat.CLOCK_12H)
+                            .setHour(it.reminderDateTime.hour)
+                            .setMinute(it.reminderDateTime.minute)
+                            .setTitleText("Select time")
+                            .build()
                     timePicker.show(parentFragmentManager, TIME_PICKER_TAG)
 
                     timePicker.addOnPositiveButtonClickListener {
                         toDoDetailViewModel.updateToDo { oldToDo ->
                             oldToDo.copy(
-                                reminderDateTime = oldToDo.reminderDateTime.withHour(
-                                    timePicker.hour
-                                ).withMinute(timePicker.minute)
+                                reminderDateTime = oldToDo.reminderDateTime
+                                    .withHour(timePicker.hour)
+                                    .withMinute(timePicker.minute)
                             )
                         }
                     }
@@ -120,35 +116,6 @@ class ToDoDetailFragment : Fragment() {
         }
     }
 
-    private fun scheduleNotification(toDo: ToDo) {
-        if (toDo.reminderDateTime.isAfter(ZonedDateTime.now())) {
-            val intent =
-                Intent(requireContext().applicationContext, MyNotification::class.java).putExtra(
-                    ID_EXTRA,
-                    toDo.id.toInt()
-                ).putExtra(TITLE_EXTRA, toDo.title)
-
-            val pendingIntent = PendingIntent.getBroadcast(
-                requireContext().applicationContext,
-                toDo.id.toInt(),
-                intent,
-                PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-            )
-
-
-            val alarmManager =
-                requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val time = toDo.reminderDateTime.toInstant().toEpochMilli()
-            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
-
-            Snackbar.make(
-                binding.root,
-                "Notification has been scheduled for ${toDo.reminderDateTime}",
-                Snackbar.LENGTH_SHORT
-            ).show()
-        }
-    }
-
 
     private fun updateUi(toDo: ToDo) {
         binding.apply {
@@ -162,7 +129,7 @@ class ToDoDetailFragment : Fragment() {
                 toDoTime.setText(toDo.reminderDateTime.format(ToDoAdapter.timeFormatter))
             }
         }
-        scheduleNotification(toDo)
+        MainActivity.scheduleNotification(toDo, requireContext(), binding.root)
     }
 
     override fun onDestroyView() {
