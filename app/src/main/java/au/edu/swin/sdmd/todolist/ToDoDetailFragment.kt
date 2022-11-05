@@ -76,11 +76,11 @@ class ToDoDetailFragment : Fragment() {
                 val toDo = toDoDetailViewModel.toDo.value
                 toDo?.let {
                     val timePicker = MaterialTimePicker.Builder()
-                            .setTimeFormat(TimeFormat.CLOCK_12H)
-                            .setHour(it.reminderDateTime.hour)
-                            .setMinute(it.reminderDateTime.minute)
-                            .setTitleText("Select time")
-                            .build()
+                        .setTimeFormat(TimeFormat.CLOCK_12H)
+                        .setHour(it.reminderDateTime.hour)
+                        .setMinute(it.reminderDateTime.minute)
+                        .setTitleText("Select time")
+                        .build()
                     timePicker.show(parentFragmentManager, TIME_PICKER_TAG)
 
                     timePicker.addOnPositiveButtonClickListener {
