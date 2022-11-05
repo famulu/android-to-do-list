@@ -1,9 +1,5 @@
 package au.edu.swin.sdmd.todolist
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -60,7 +56,7 @@ class ToDoListFragment : Fragment() {
         binding.floatingActionButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 val newToDo = ToDo(
-                    title = "To Do",
+                    title = "",
                     reminderDateTime = ZonedDateTime.now().plusHours(1).withMinute(0).withSecond(0)
                         .withNano(0)
                 )
@@ -90,7 +86,11 @@ class ToDoListFragment : Fragment() {
                         lifecycleScope.launch {
                             toDoListViewModel.insertToDo(deletedToDo)
                         }
-                        MainActivity.scheduleNotification(deletedToDo, requireContext(), binding.root)
+                        MainActivity.scheduleNotification(
+                            deletedToDo,
+                            requireContext(),
+                            binding.root
+                        )
                     }.show()
                 }
             }
