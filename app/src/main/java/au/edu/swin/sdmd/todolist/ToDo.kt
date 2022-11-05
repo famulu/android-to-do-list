@@ -12,5 +12,5 @@ import java.time.ZonedDateTime
 data class ToDo(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
-    @ColumnInfo(name = "reminder_date_time") val reminderDateTime: ZonedDateTime,
+    val reminderDateTime: ZonedDateTime,
 ) : Parcelable
