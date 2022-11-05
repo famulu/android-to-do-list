@@ -26,4 +26,6 @@ class ToDoListViewModel : ViewModel() {
     suspend fun delete(toDo: ToDo) = toDoRepository.delete(toDo)
 
     suspend fun loadById(id: Long) = toDoRepository.loadById(id)
+
+    suspend fun update(toDo: ToDo) = toDoRepository.updateToDo(toDo)
 }
