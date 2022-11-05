@@ -11,6 +11,6 @@ import java.time.ZonedDateTime
 @Entity
 data class ToDo(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    var title: String,
-    @ColumnInfo(name = "reminder_date_time") var reminderDateTime: ZonedDateTime,
+    val title: String,
+    @ColumnInfo(name = "reminder_date_time") val reminderDateTime: ZonedDateTime,
 ) : Parcelable
