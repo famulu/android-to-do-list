@@ -22,4 +22,8 @@
             android:name="toDoId"
             app:argType="long" />
     </fragment>
+    <fragment
+        android:id="@+id/fragmentCompletedToDoList"
+        android:name="au.edu.swin.sdmd.todolist.FragmentCompletedToDoList"
+        android:label="FragmentCompletedToDoList" />
 </navigation>

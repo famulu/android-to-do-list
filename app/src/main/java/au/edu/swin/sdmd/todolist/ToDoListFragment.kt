@@ -46,7 +46,7 @@ class ToDoListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 toDoListViewModel.toDos.collect { toDos ->
                     binding.toDoRecyclerView.adapter =
-                        ToDoAdapter(toDos.filter { !it.isCompleted }) { toDoId ->
+                        ToDoAdapter(toDos) { toDoId ->
                             findNavController().navigate(
                                 ToDoListFragmentDirections.showTodoDetail(
                                     toDoId

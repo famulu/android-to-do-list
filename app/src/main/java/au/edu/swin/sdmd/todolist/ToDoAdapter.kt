@@ -1,5 +1,6 @@
 package au.edu.swin.sdmd.todolist
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -40,6 +41,11 @@ class ToDoViewHolder(private val binding: ToDoItemBinding) : RecyclerView.ViewHo
 
     fun bind(toDo: ToDo, onToDoClicked: (toDoId: Long) -> Unit) {
         binding.toDoItemTitle.text = toDo.title
+        if (toDo.isCompleted) {
+            binding.toDoItemTitle.apply {
+                paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            }
+        }
         binding.reminderDate.text = toDo.reminderDateTime.format(ToDoAdapter.dateFormatter)
         binding.reminderTime.text = toDo.reminderDateTime.format(ToDoAdapter.timeFormatter)
 

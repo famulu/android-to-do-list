@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class ToDoListViewModel : ViewModel() {
+class CompletedToDoListViewModel : ViewModel() {
     private val toDoRepository = ToDoRepository.get()
     private val _toDos: MutableStateFlow<List<ToDo>> = MutableStateFlow(emptyList())
     val toDos: StateFlow<List<ToDo>>
@@ -16,16 +16,8 @@ class ToDoListViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             toDoRepository.loadAll().collect {
-                _toDos.value = it.filter { !it.isCompleted }
+                _toDos.value = it.filter { it.isCompleted }
             }
         }
     }
-
-    suspend fun insertToDo(toDo: ToDo) = toDoRepository.insert(toDo)
-
-    suspend fun delete(toDo: ToDo) = toDoRepository.delete(toDo)
-
-    suspend fun loadById(id: Long) = toDoRepository.loadById(id)
-
-    suspend fun update(toDo: ToDo) = toDoRepository.updateToDo(toDo)
 }
