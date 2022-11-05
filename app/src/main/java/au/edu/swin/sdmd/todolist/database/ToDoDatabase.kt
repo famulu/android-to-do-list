@@ -6,7 +6,7 @@ import au.edu.swin.sdmd.todolist.ToDo
 
 @Database(
     entities = [ToDo::class],
-    version = 2,
+    version = 3,
     autoMigrations = [AutoMigration(from = 1, to = 2, spec = ToDoDatabase.MyAutoMigration::class)]
 )
 @TypeConverters(ToDoTypeConverter::class)
