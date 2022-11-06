@@ -7,16 +7,17 @@ import java.time.ZonedDateTime
 
 class ToDoTypeConverter {
     @TypeConverter
-    fun fromZonedDateTime(dateTime: ZonedDateTime): Long {
-        return dateTime.toInstant().toEpochMilli()
+    fun fromZonedDateTime(dateTime: ZonedDateTime?): Long? {
+        return dateTime?.toInstant()?.toEpochMilli()
     }
 
     @TypeConverter
-    fun toZonedDateTime(millisSinceEpoch: Long): ZonedDateTime {
-        return ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(millisSinceEpoch),
-            ZoneId.systemDefault()
-        )
+    fun toZonedDateTime(millisSinceEpoch: Long?): ZonedDateTime? {
+        return if (millisSinceEpoch == null) {
+            null
+        } else {
+            ZonedDateTime.ofInstant(Instant.ofEpochMilli(millisSinceEpoch), ZoneId.systemDefault())
+        }
     }
 
 

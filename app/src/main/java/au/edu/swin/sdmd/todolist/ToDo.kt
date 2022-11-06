@@ -9,6 +9,6 @@ import java.time.ZonedDateTime
 data class ToDo(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
-    val reminderDateTime: ZonedDateTime,
+    val reminderDateTime: ZonedDateTime?,
     @ColumnInfo(defaultValue = "0") val isCompleted: Boolean = false
 )

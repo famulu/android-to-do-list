@@ -21,6 +21,8 @@ import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 
 private const val DATE_PICKER_TAG = "DATE_PICKER_TAG"
@@ -55,8 +57,10 @@ class ToDoDetailFragment : Fragment() {
             }
 
             toDoDate.setOnClickListener {
-                val dateUtc =
-                    toDoDetailViewModel.toDo.value?.reminderDateTime?.toInstant()?.toEpochMilli()
+                val reminderDateTime =
+                    toDoDetailViewModel.toDo.value?.reminderDateTime ?: ZonedDateTime.now()
+                        .truncatedTo(ChronoUnit.DAYS)
+                val dateUtc = reminderDateTime.toInstant().toEpochMilli()
 
                 val datePicker = MaterialDatePicker.Builder.datePicker().setTitleText("Select date")
                     .setSelection(dateUtc).build()
@@ -64,33 +68,32 @@ class ToDoDetailFragment : Fragment() {
                 datePicker.show(parentFragmentManager, DATE_PICKER_TAG)
 
                 datePicker.addOnPositiveButtonClickListener {
-                    val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
-                        .withFixedOffsetZone()
+                    val updatedDate = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault())
                     toDoDetailViewModel.updateToDo { oldToDo ->
-                        oldToDo.copy(reminderDateTime = date)
+                        oldToDo.copy(reminderDateTime = updatedDate)
                     }
                 }
             }
 
             toDoTime.setOnClickListener {
-                val toDo = toDoDetailViewModel.toDo.value
-                toDo?.let {
-                    val timePicker = MaterialTimePicker.Builder()
-                        .setTimeFormat(TimeFormat.CLOCK_12H)
-                        .setHour(it.reminderDateTime.hour)
-                        .setMinute(it.reminderDateTime.minute)
-                        .setTitleText("Select time")
-                        .build()
-                    timePicker.show(parentFragmentManager, TIME_PICKER_TAG)
+                val reminderDateTime =
+                    toDoDetailViewModel.toDo.value?.reminderDateTime ?: ZonedDateTime.now()
+                        .truncatedTo(ChronoUnit.MINUTES).plusHours(1)
 
-                    timePicker.addOnPositiveButtonClickListener {
-                        toDoDetailViewModel.updateToDo { oldToDo ->
-                            oldToDo.copy(
-                                reminderDateTime = oldToDo.reminderDateTime
-                                    .withHour(timePicker.hour)
-                                    .withMinute(timePicker.minute)
-                            )
-                        }
+                val timePicker = MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_12H)
+                    .setHour(reminderDateTime.hour).setMinute(reminderDateTime.minute)
+                    .setTitleText("Select time").build()
+
+                timePicker.show(parentFragmentManager, TIME_PICKER_TAG)
+
+                timePicker.addOnPositiveButtonClickListener {
+                    toDoDetailViewModel.updateToDo { oldToDo ->
+                        val newReminderDateTime = oldToDo.reminderDateTime ?: ZonedDateTime.now()
+                            .truncatedTo(ChronoUnit.MINUTES)
+                        oldToDo.copy(
+                            reminderDateTime = newReminderDateTime.withHour(timePicker.hour)
+                                .withMinute(timePicker.minute)
+                        )
                     }
 
                 }
@@ -122,11 +125,13 @@ class ToDoDetailFragment : Fragment() {
             if (toDoTitle.text.toString() != toDo.title) {
                 toDoTitle.setText(toDo.title)
             }
-            if (toDoDate.text.toString() != toDo.reminderDateTime.format(ToDoAdapter.dateFormatter)) {
-                toDoDate.setText(toDo.reminderDateTime.format(ToDoAdapter.dateFormatter))
-            }
-            if (toDoTime.text.toString() != toDo.reminderDateTime.format(ToDoAdapter.timeFormatter)) {
-                toDoTime.setText(toDo.reminderDateTime.format(ToDoAdapter.timeFormatter))
+            toDo.reminderDateTime?.let {
+                if (toDoDate.text.toString() != it.format(ToDoAdapter.dateFormatter)) {
+                    toDoDate.setText(it.format(ToDoAdapter.dateFormatter))
+                }
+                if (toDoTime.text.toString() != it.format(ToDoAdapter.timeFormatter)) {
+                    toDoTime.setText(it.format(ToDoAdapter.timeFormatter))
+                }
             }
         }
         MainActivity.scheduleNotification(toDo, requireContext(), binding.root)

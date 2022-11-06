@@ -7,7 +7,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -76,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         fun scheduleNotification(toDo: ToDo, context: Context, view: View) {
-            if (toDo.reminderDateTime.isAfter(ZonedDateTime.now())) {
+            if (toDo.reminderDateTime?.isAfter(ZonedDateTime.now()) == true) {
                 val pendingIntent = createPendingIntent(context, toDo)
 
                 val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager

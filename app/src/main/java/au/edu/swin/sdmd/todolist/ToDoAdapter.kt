@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import au.edu.swin.sdmd.todolist.databinding.ToDoItemBinding
 import java.time.format.DateTimeFormatter
 
@@ -37,7 +38,7 @@ class ToDoAdapter(
     }
 }
 
-class ToDoViewHolder(private val binding: ToDoItemBinding) : RecyclerView.ViewHolder(binding.root) {
+class ToDoViewHolder(private val binding: ToDoItemBinding) : ViewHolder(binding.root) {
 
     fun bind(toDo: ToDo, onToDoClicked: (toDoId: Long) -> Unit) {
         binding.toDoItemTitle.text = toDo.title
@@ -46,14 +47,13 @@ class ToDoViewHolder(private val binding: ToDoItemBinding) : RecyclerView.ViewHo
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
         }
-        binding.reminderDate.text = toDo.reminderDateTime.format(ToDoAdapter.dateFormatter)
-        binding.reminderTime.text = toDo.reminderDateTime.format(ToDoAdapter.timeFormatter)
+        toDo.reminderDateTime?.let {
+            binding.reminderDate.text = it.format(ToDoAdapter.dateFormatter)
+            binding.reminderTime.text = it.format(ToDoAdapter.timeFormatter)
+        }
 
         binding.root.setOnClickListener {
             onToDoClicked(toDo.id)
         }
     }
 }
-
-
-
