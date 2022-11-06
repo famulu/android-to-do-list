@@ -59,11 +59,7 @@ class ToDoListFragment : Fragment() {
 
         binding.floatingActionButton.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val newToDo = ToDo(
-                    title = "", reminderDateTime = null
-                )
-                val newToDoId = toDoListViewModel.insertToDo(newToDo)
-                findNavController().navigate(ToDoListFragmentDirections.showTodoDetail(newToDoId))
+                findNavController().navigate(ToDoListFragmentDirections.showTodoDetail())
             }
         }
 

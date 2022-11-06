@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import au.edu.swin.sdmd.todolist.databinding.FragmentToDoDetailBinding
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.launch
@@ -50,6 +51,16 @@ class ToDoDetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.apply {
+            saveButton.setOnClickListener {
+                val toDo = toDoDetailViewModel.toDo.value
+                if (toDo == null || toDo.title.isEmpty()) {
+                    Toast.makeText(context, "Please add a title", Toast.LENGTH_SHORT).show()
+                } else {
+                    toDoDetailViewModel.updateDatabase()
+                    findNavController().popBackStack()
+                }
+            }
+
             toDoTitle.doOnTextChanged { text, _, _, _ ->
                 toDoDetailViewModel.updateToDo { oldToDo ->
                     oldToDo.copy(title = text.toString())
@@ -78,7 +89,7 @@ class ToDoDetailFragment : Fragment() {
             toDoTime.setOnClickListener {
                 val reminderDateTime =
                     toDoDetailViewModel.toDo.value?.reminderDateTime ?: ZonedDateTime.now()
-                        .truncatedTo(ChronoUnit.MINUTES).plusHours(1)
+                        .truncatedTo(ChronoUnit.HOURS).plusHours(1)
 
                 val timePicker = MaterialTimePicker.Builder().setTimeFormat(TimeFormat.CLOCK_12H)
                     .setHour(reminderDateTime.hour).setMinute(reminderDateTime.minute)
@@ -111,11 +122,22 @@ class ToDoDetailFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, true) {
-            if (toDoDetailViewModel.toDo.value?.title.isNullOrEmpty()) {
-                Toast.makeText(context, "Please add a title", Toast.LENGTH_SHORT).show()
-            } else {
+
+
+            val toDo = toDoDetailViewModel.toDo.value
+
+            if (toDo == null || toDo.id <= 0L && toDo.title.isNullOrEmpty() && toDo.reminderDateTime == null) {
                 findNavController().popBackStack()
+            } else {
+                MaterialAlertDialogBuilder(requireContext()).setTitle("Discard current task?")
+                    .setMessage("Are you sure you want to discard the current draft?")
+                    .setNegativeButton("Cancel") { dialog, which ->
+
+                    }.setPositiveButton("Discard") { dialog, which ->
+                        findNavController().popBackStack()
+                    }.show()
             }
+
         }
     }
 

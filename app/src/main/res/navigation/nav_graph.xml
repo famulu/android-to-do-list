@@ -20,6 +20,7 @@
         tools:layout="@layout/fragment_to_do_detail">
         <argument
             android:name="toDoId"
+            android:defaultValue="0L"
             app:argType="long" />
     </fragment>
     <fragment

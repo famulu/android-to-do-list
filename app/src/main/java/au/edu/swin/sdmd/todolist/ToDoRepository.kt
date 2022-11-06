@@ -12,8 +12,7 @@ import kotlinx.coroutines.launch
 private const val DATABASE_NAME = "todo-database"
 
 class ToDoRepository private constructor(
-    context: Context,
-    private val coroutineScope: CoroutineScope = GlobalScope
+    context: Context, private val coroutineScope: CoroutineScope = GlobalScope
 ) {
     val MIGRATION_2_3 = object : Migration(2, 3) {
         override fun migrate(database: SupportSQLiteDatabase) {
@@ -46,7 +45,12 @@ class ToDoRepository private constructor(
         }
     }
 
-    suspend fun insert(toDo: ToDo) = database.toDoDao().insert(toDo)
+    fun insert(toDo: ToDo) {
+        coroutineScope.launch {
+            database.toDoDao().insert(toDo)
+        }
+    }
+
     suspend fun delete(toDo: ToDo) = database.toDoDao().delete(toDo)
     suspend fun deleteAll() = database.toDoDao().deleteAll()
 

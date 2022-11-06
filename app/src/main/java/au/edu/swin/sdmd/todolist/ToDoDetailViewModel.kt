@@ -15,14 +15,23 @@ class ToDoDetailViewModel(toDoId: Long) : ViewModel() {
     val toDo: StateFlow<ToDo?> = _toDo.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            _toDo.value = toDoRepository.loadById(toDoId)
+        if (toDoId == 0L) {
+            _toDo.value = ToDo(title = "", reminderDateTime = null)
+        } else {
+            viewModelScope.launch {
+                _toDo.value = toDoRepository.loadById(toDoId)
+            }
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        toDo.value?.let { toDoRepository.updateToDo(it) }
+    fun updateDatabase() {
+        toDo.value?.let {
+            if (it.id <= 0L) {
+                toDoRepository.insert(it)
+            } else {
+                toDoRepository.updateToDo(it)
+            }
+        }
     }
 
     fun updateToDo(onUpdate: (ToDo) -> ToDo) {
