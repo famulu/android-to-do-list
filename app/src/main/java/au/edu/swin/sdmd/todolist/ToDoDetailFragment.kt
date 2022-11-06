@@ -57,6 +57,7 @@ class ToDoDetailFragment : Fragment() {
                     Toast.makeText(context, "Please add a title", Toast.LENGTH_SHORT).show()
                 } else {
                     toDoDetailViewModel.updateDatabase()
+                    MyNotification.scheduleNotification(toDo, requireContext(), binding.root)
                     findNavController().popBackStack()
                 }
             }
@@ -156,7 +157,6 @@ class ToDoDetailFragment : Fragment() {
                 }
             }
         }
-        MainActivity.scheduleNotification(toDo, requireContext(), binding.root)
     }
 
     override fun onDestroyView() {

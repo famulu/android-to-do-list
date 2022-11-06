@@ -21,7 +21,6 @@ import androidx.recyclerview.widget.RecyclerView
 import au.edu.swin.sdmd.todolist.databinding.FragmentToDoListBinding
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
-import java.time.ZonedDateTime
 
 class ToDoListFragment : Fragment() {
     private var _binding: FragmentToDoListBinding? = null
@@ -77,14 +76,14 @@ class ToDoListFragment : Fragment() {
                     viewLifecycleOwner.lifecycleScope.launch {
                         val deletedToDo = toDoListViewModel.loadById(id)
                         toDoListViewModel.delete(deletedToDo)
-                        MainActivity.cancelNotification(deletedToDo, requireContext())
+                        MyNotification.cancelNotification(deletedToDo, requireContext())
                         Snackbar.make(
                             binding.root, "Deleted " + deletedToDo.title, Snackbar.LENGTH_LONG
                         ).setAction("Undo") {
                             lifecycleScope.launch {
                                 toDoListViewModel.insertToDo(deletedToDo)
                             }
-                            MainActivity.scheduleNotification(
+                            MyNotification.scheduleNotification(
                                 deletedToDo, requireContext(), binding.root
                             )
                         }.show()
@@ -93,14 +92,14 @@ class ToDoListFragment : Fragment() {
                     viewLifecycleOwner.lifecycleScope.launch {
                         val toDo = toDoListViewModel.loadById(id)
                         toDoListViewModel.update(toDo.copy(isCompleted = true))
-                        MainActivity.cancelNotification(toDo, requireContext())
+                        MyNotification.cancelNotification(toDo, requireContext())
                         Snackbar.make(
                             binding.root, "Completed " + toDo.title, Snackbar.LENGTH_LONG
                         ).setAction("Undo") {
                             lifecycleScope.launch {
                                 toDoListViewModel.update(toDo)
                             }
-                            MainActivity.scheduleNotification(
+                            MyNotification.scheduleNotification(
                                 toDo, requireContext(), binding.root
                             )
                         }.show()
