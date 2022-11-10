@@ -13,6 +13,7 @@ class ToDoDetailViewModel(toDoId: Long) : ViewModel() {
     private val toDoRepository: ToDoRepository = ToDoRepository.get()
     private val _toDo: MutableStateFlow<ToDo?> = MutableStateFlow(null)
     val toDo: StateFlow<ToDo?> = _toDo.asStateFlow()
+    var initialToDo: ToDo? = null
 
     init {
         if (toDoId == 0L) {
@@ -20,6 +21,7 @@ class ToDoDetailViewModel(toDoId: Long) : ViewModel() {
         } else {
             viewModelScope.launch {
                 _toDo.value = toDoRepository.loadById(toDoId)
+                initialToDo = _toDo.value
             }
         }
     }
@@ -33,7 +35,6 @@ class ToDoDetailViewModel(toDoId: Long) : ViewModel() {
             }
         }
     }
-
     fun updateToDo(onUpdate: (ToDo) -> ToDo) {
         _toDo.update { oldToDo ->
             oldToDo?.let {

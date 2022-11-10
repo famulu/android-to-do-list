@@ -54,6 +54,7 @@ class ToDoDetailFragment : Fragment() {
             saveButton.setOnClickListener {
                 val toDo = toDoDetailViewModel.toDo.value
                 if (toDo == null || toDo.title.isEmpty()) {
+                    titleLayout.error = "Please add a title"
                     Toast.makeText(context, "Please add a title", Toast.LENGTH_SHORT).show()
                 } else {
                     toDoDetailViewModel.updateDatabase()
@@ -123,11 +124,9 @@ class ToDoDetailFragment : Fragment() {
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this, true) {
-
-
             val toDo = toDoDetailViewModel.toDo.value
 
-            if (toDo == null || toDo.id <= 0L && toDo.title.isEmpty() && toDo.reminderDateTime == null) {
+            if (toDo == null || toDo.id <= 0L && toDo.title.isEmpty() && toDo.reminderDateTime == null || toDo == toDoDetailViewModel.initialToDo) {
                 findNavController().popBackStack()
             } else {
                 MaterialAlertDialogBuilder(requireContext()).setTitle("Discard current task?")
