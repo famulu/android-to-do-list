@@ -127,7 +127,7 @@ class ToDoDetailFragment : Fragment() {
 
             val toDo = toDoDetailViewModel.toDo.value
 
-            if (toDo == null || toDo.id <= 0L && toDo.title.isNullOrEmpty() && toDo.reminderDateTime == null) {
+            if (toDo == null || toDo.id <= 0L && toDo.title.isEmpty() && toDo.reminderDateTime == null) {
                 findNavController().popBackStack()
             } else {
                 MaterialAlertDialogBuilder(requireContext()).setTitle("Discard current task?")

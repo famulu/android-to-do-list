@@ -15,8 +15,8 @@ class CompletedToDoListViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            toDoRepository.loadAll().collect {
-                _toDos.value = it.filter { it.isCompleted }
+            toDoRepository.loadAll().collect { toDoList ->
+                _toDos.value = toDoList.filter { it.isCompleted }
             }
         }
     }

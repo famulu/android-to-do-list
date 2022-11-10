@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/toDoListFragment" android:title="My List" android:checkable="true"/>
+    <item android:id="@+id/toDoListFragment" android:title="@string/my_list" android:checkable="true"/>
     <item android:id="@+id/fragmentCompletedToDoList"
         android:checkable="true"
-        android:title="Completed" />
+        android:title="@string/completed" />
 </menu>

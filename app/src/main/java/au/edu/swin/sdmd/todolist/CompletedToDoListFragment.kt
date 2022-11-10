@@ -11,12 +11,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import au.edu.swin.sdmd.todolist.databinding.FragmentCompletedToDoListBinding
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class FragmentCompletedToDoList : Fragment() {
     private var _binding: FragmentCompletedToDoListBinding? = null
-    val binding
+    private val binding
         get() = checkNotNull(_binding) {
             "binding cannot be accessed. check if view is visible"
         }

@@ -15,4 +15,11 @@
     <string name="nav_close">Close</string>
     <string name="open">open</string>
     <string name="close">close</string>
+    <string name="add_to_do">Add To Do</string>
+    <string name="title">Title</string>
+    <string name="date">Date</string>
+    <string name="time">Time</string>
+    <string name="save">Save</string>
+    <string name="my_list">My List</string>
+    <string name="completed">Completed</string>
 </resources>

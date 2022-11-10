@@ -15,17 +15,17 @@ class ToDoListViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            toDoRepository.loadAll().collect {
-                _toDos.value = it.filter { !it.isCompleted }
+            toDoRepository.loadAll().collect { toDoList ->
+                _toDos.value = toDoList.filter { !it.isCompleted }
             }
         }
     }
 
-    suspend fun insertToDo(toDo: ToDo) = toDoRepository.insert(toDo)
+    fun insertToDo(toDo: ToDo) = toDoRepository.insert(toDo)
 
     suspend fun delete(toDo: ToDo) = toDoRepository.delete(toDo)
 
     suspend fun loadById(id: Long) = toDoRepository.loadById(id)
 
-    suspend fun update(toDo: ToDo) = toDoRepository.updateToDo(toDo)
+    fun update(toDo: ToDo) = toDoRepository.updateToDo(toDo)
 }
