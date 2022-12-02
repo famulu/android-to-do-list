@@ -29,5 +29,13 @@ class MainActivity : AppCompatActivity() {
         )
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+
+        binding.toolbar.setNavigationOnClickListener {
+            if (binding.toolbar.navigationContentDescription == "Open navigation drawer") {
+                binding.drawerLayout.open()
+            } else {
+                navController.navigateUp()
+            }
+        }
     }
 }
