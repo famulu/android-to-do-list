@@ -7,8 +7,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import au.edu.swin.sdmd.todolist.databinding.ActivityMainBinding
 
-private const val TAG = "MainActivity"
-
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
@@ -29,6 +27,8 @@ class MainActivity : AppCompatActivity() {
         )
         binding.toolbar.setupWithNavController(navController, appBarConfiguration)
         binding.navView.setupWithNavController(navController)
+
+        setSupportActionBar(binding.toolbar)
 
         binding.toolbar.setNavigationOnClickListener {
             if (binding.toolbar.navigationContentDescription == "Open navigation drawer") {

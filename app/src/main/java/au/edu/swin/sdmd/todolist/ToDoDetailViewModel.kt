@@ -9,26 +9,39 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ToDoDetailViewModel(toDoId: Long) : ViewModel() {
+class ToDoDetailViewModel(
+    /**
+     * If 0, create a new ToDo
+     * Else, update an existing ToDo
+     */
+    toDoId: Long
+) : ViewModel() {
     private val toDoRepository: ToDoRepository = ToDoRepository.get()
     private val _toDo: MutableStateFlow<ToDo?> = MutableStateFlow(null)
     val toDo: StateFlow<ToDo?> = _toDo.asStateFlow()
-    var initialToDo: ToDo? = null
+    var changesExist: Boolean = false
+        private set
+
 
     init {
-        if (toDoId == 0L) {
-            _toDo.value = ToDo(title = "", reminderDateTime = null)
+        if (isNewToDo(toDoId)) {
+            _toDo.value = ToDo(title = "New To Do", reminderDateTime = null)
         } else {
             viewModelScope.launch {
                 _toDo.value = toDoRepository.loadById(toDoId)
-                initialToDo = _toDo.value
             }
         }
     }
 
+    /**
+     * We can't set id to null, since nullable longs are not allowed in navigation args
+     * So, 0 is used to indicate the absence of a ToDo
+     */
+    private fun isNewToDo(id: Long) = id == 0L
+
     fun updateDatabase() {
         toDo.value?.let {
-            if (it.id <= 0L) {
+            if (isNewToDo(it.id)) {
                 toDoRepository.insert(it)
             } else {
                 toDoRepository.updateToDo(it)
@@ -38,9 +51,14 @@ class ToDoDetailViewModel(toDoId: Long) : ViewModel() {
     fun updateToDo(onUpdate: (ToDo) -> ToDo) {
         _toDo.update { oldToDo ->
             oldToDo?.let {
+                changesExist = true
                 onUpdate(it)
             }
         }
+    }
+
+    suspend fun deleteToDo(toDo: ToDo) {
+        toDoRepository.delete(toDo)
     }
 }
 

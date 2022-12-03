@@ -1,9 +1,7 @@
 package au.edu.swin.sdmd.todolist
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
@@ -15,6 +13,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import au.edu.swin.sdmd.todolist.databinding.FragmentToDoDetailBinding
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
@@ -38,6 +37,11 @@ class ToDoDetailFragment : Fragment() {
     private val args: ToDoDetailFragmentArgs by navArgs()
     private val toDoDetailViewModel: ToDoDetailViewModel by viewModels {
         ToDoDetailViewModelFactory(args.toDoId)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -123,21 +127,51 @@ class ToDoDetailFragment : Fragment() {
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this, true) {
-            val toDo = toDoDetailViewModel.toDo.value
-
-            if (toDo == null || toDo.id <= 0L && toDo.title.isEmpty() && toDo.reminderDateTime == null || toDo == toDoDetailViewModel.initialToDo) {
-                findNavController().popBackStack()
-            } else {
-                MaterialAlertDialogBuilder(requireContext()).setTitle("Discard current task?")
-                    .setMessage("Are you sure you want to discard the current draft?")
-                    .setNegativeButton("Cancel") { dialog, which ->
-
-                    }.setPositiveButton("Discard") { dialog, which ->
-                        findNavController().popBackStack()
-                    }.show()
+        activity?.let {
+            it.onBackPressedDispatcher.addCallback(this, true) {
+                onNavigateBack()
             }
+            it.findViewById<MaterialToolbar>(R.id.toolbar).setNavigationOnClickListener {
+                onNavigateBack()
+            }
+        }
+    }
 
+    private fun onNavigateBack() {
+        if (!toDoDetailViewModel.changesExist) {
+            findNavController().popBackStack()
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Discard current task?")
+                .setMessage("Are you sure you want to discard the current draft?")
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Discard Changes") { _, _ ->
+                    findNavController().popBackStack()
+                }
+                .show()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.fragment_to_do_detail, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.delete_to_do -> {
+                viewLifecycleOwner.lifecycleScope.launch {
+                    val deletedToDo = toDoDetailViewModel.toDo.value
+                    deletedToDo?.let {
+                        toDoDetailViewModel.deleteToDo(deletedToDo)
+                        val context = requireContext()
+                        MyNotification.cancelNotification(deletedToDo, context)
+                    }
+                    findNavController().popBackStack()
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
